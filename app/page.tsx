@@ -22,7 +22,7 @@ export default function Home() {
       const sorted = students.slice().sort((a, b) => b.createdAt - a.createdAt);
       setCount(students.length);
       setRecent(
-        sorted.slice(0, 5).map((s) => ({
+        sorted.slice(0, 20).map((s) => ({
           id: s.id,
           fullName: s.fullName,
           mobile: s.mobile,
@@ -71,7 +71,9 @@ export default function Home() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Recent Added</CardTitle>
-            <p className="text-sm text-zinc-600 dark:text-zinc-300">Latest students (max 5).</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-300">
+              Latest students (scroll to view more).
+            </p>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -88,7 +90,7 @@ export default function Home() {
                 No students yet. Click “Add” to create your first student.
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="max-h-[360px] space-y-2 overflow-y-auto pr-1">
                 {recent.map((s) => (
                   <div
                     key={s.id}

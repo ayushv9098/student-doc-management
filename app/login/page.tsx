@@ -1,109 +1,84 @@
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { getFirebase } from "@/lib/firebase";
 
-export default function LoginPage() {
+export default function LoginPage() { 
   const router = useRouter();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
 
   const firebase = getFirebase();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-
     if (!firebase) {
-      setError(
-        "Firebase is not configured. Add NEXT_PUBLIC_FIREBASE_* environment variables, then restart the app."
-      );
+      setError("Firebase is not configured. Set the NEXT_PUBLIC_FIREBASE_* environment variables.");
       return;
     }
-
-    setLoading(true);
+    setPending(true);
     try {
-      await signInWithEmailAndPassword(firebase.auth, email.trim(), password);
+      await signInWithEmailAndPassword(firebase.auth, email, password);
       router.push("/");
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Login failed.";
-      setError(message);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign-in failed.");
     } finally {
-      setLoading(false);
+      setPending(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto flex max-w-md flex-1 flex-col justify-center px-4 py-10">
       <Card>
         <CardHeader>
-          <CardTitle>Admin Login</CardTitle>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            Email + password login (Firebase Auth).
-          </p>
+          <CardTitle>Admin login</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {error ? (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-200">
-              {error}
-            </div>
-          ) : null}
-
-          <form onSubmit={onSubmit} className="space-y-3">
-            <label className="block space-y-1">
-              <div className="text-xs font-medium text-zinc-700 dark:text-zinc-200">Email</div>
+        <form onSubmit={onSubmit}>
+          <CardContent className="flex flex-col gap-4">
+            {!firebase ? (
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Add your Firebase web config to <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-900">.env.local</code>{" "}
+                to enable sign-in.
+              </p>
+            ) : null}
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium">Email</span>
               <Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 type="email"
-                placeholder="admin@example.com"
                 autoComplete="email"
+                value={email}
+                onChange={(ev) => setEmail(ev.target.value)}
                 required
               />
             </label>
-            <label className="block space-y-1">
-              <div className="text-xs font-medium text-zinc-700 dark:text-zinc-200">Password</div>
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium">Password</span>
               <Input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 type="password"
-                placeholder="••••••••"
                 autoComplete="current-password"
+                value={password}
+                onChange={(ev) => setPassword(ev.target.value)}
                 required
               />
             </label>
-
-            <Button type="submit" disabled={loading || !email || !password} className="w-full">
-              {loading ? "Signing in…" : "Login"}
+            {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" disabled={pending || !firebase}>
+              {pending ? "Signing in…" : "Sign in"}
             </Button>
-          </form>
-
-          <div className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
-            <div className="font-medium text-black dark:text-white mb-1">Beginner shortcut</div>
-            If Firebase isn’t set up yet, you can still use the UI with localStorage.
-          </div>
-
-          <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => router.push("/")}>
-              Continue to Dashboard
-            </Button>
-            <Button variant="outline" className="flex-1" onClick={() => router.push("/students")}>
-              Continue to Students
-            </Button>
-          </div>
-        </CardContent>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );
 }
-

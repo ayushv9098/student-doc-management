@@ -1,17 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import * as React from "react";
-
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
-
   return (
-    <header className="w-full border-b border-zinc-200 bg-white text-black dark:border-zinc-800 dark:bg-zinc-950 dark:text-white">
+    <header className="fixed inset-x-0 top-0 z-50 w-full border-b border-zinc-200 bg-white text-black dark:border-zinc-800 dark:bg-zinc-950 dark:text-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-md bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold">
@@ -38,8 +32,6 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Keep ThemeToggle mounted after hydration */}
-          {mounted ? <ThemeToggle /> : null}
           <Link
             href="/login"
             className={cn(
