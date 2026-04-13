@@ -61,7 +61,7 @@ export default function NewStudentPage() {
 
         // student_documents table mein save karo
         await supabase.from("student_documents").insert({
-          student_id: student.id,
+          student_id: String(student.id),
           doc_type:   f.fileName,
           file_name:  f.fileName,
           file_url:   urlData.publicUrl,
