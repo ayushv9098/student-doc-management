@@ -1,9 +1,29 @@
 "use client";
 import * as React from "react";
-import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import supabase from "@/lib/supabase";
+
+type StudentRow = {
+  id: string | number;
+  full_name: string | null;
+  class: string | null;
+  mobile: string | null;
+  roll_number: string | null;
+  father_name: string | null;
+  mother_name: string | null;
+  aadhaar_number: string | null;
+  samagra_id: string | null;
+  apaar_id: string | null;
+};
+
+type StudentDocument = {
+  id: string | number;
+  file_name: string | null;
+  file_url: string;
+};
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
@@ -16,19 +36,21 @@ function DetailItem({ label, value }: { label: string; value: string }) {
 
 export default function StudentProfilePage() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const id = params.id;
-  const [student, setStudent] = React.useState<any>(null);
-  const [documents, setDocuments] = React.useState<any[]>([]);
+  const [student, setStudent] = React.useState<StudentRow | null>(null);
+  const [documents, setDocuments] = React.useState<StudentDocument[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     if (!id) return;
     async function load() {
       setLoading(true);
-      const { data: s } = await supabase.from("students").select("*").eq("id", id).single();
+      const { data: s } = await supabase.from("students").select("*").eq("id", id).single<StudentRow>();
       setStudent(s ?? null);
-      const { data: d } = await supabase.from("student_documents").select("*").eq("student_id", id);
+      const { data: d, error: docsError } = await supabase.from("student_documents").select("*").eq("student_id", id).returns<StudentDocument[]>();
+      if (docsError) {
+        console.error("student_documents fetch failed:", docsError.message);
+      }
       setDocuments(d ?? []);
       setLoading(false);
     }
@@ -39,12 +61,14 @@ export default function StudentProfilePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-xl font-semibold text-black dark:text-white">Student Profile</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-300">Student ID: {id}</p>
         </div>
-        <Button variant="outline" onClick={() => router.push("/students")}>Back</Button>
+        <Button asChild className="w-full sm:w-auto" variant="outline">
+          <Link href="/students">Back</Link>
+        </Button>
       </div>
 
       {!student ? (
@@ -90,19 +114,29 @@ export default function StudentProfilePage() {
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                 {documents.map((doc) => {
+                  const hasValidPath = !!doc.file_name && /^\d+\/.+/.test(doc.file_name);
+                  const { data: urlData } = doc.file_name
+                    ? supabase.storage.from("student-documents").getPublicUrl(doc.file_name)
+                    : { data: { publicUrl: doc.file_url } };
+                  const publicUrl = urlData.publicUrl || doc.file_url;
+                  console.log("Student document URL check:", {
+                    fileName: doc.file_name,
+                    hasValidPath,
+                    publicUrl,
+                  });
                   const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc.file_name ?? "");
                   return (
                     <Card key={doc.id} className="overflow-hidden">
                       <CardContent className="p-3 space-y-2">
                         {isImage ? (
-                          <img src={doc.file_url} alt={doc.file_name} className="h-40 w-full rounded-md object-cover border border-zinc-200" />
+                          <img src={publicUrl} alt={doc.file_name ?? "document"} className="h-40 w-full rounded-md object-cover border border-zinc-200" />
                         ) : (
                           <div className="flex h-40 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
                             <span className="text-3xl">PDF</span>
                           </div>
                         )}
                         <div className="truncate text-xs font-medium text-zinc-700 dark:text-zinc-200">{doc.file_name}</div>
-                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline">View</a>
+                        <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline">View</a>
                       </CardContent>
                     </Card>
                   );

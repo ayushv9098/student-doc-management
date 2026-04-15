@@ -5,10 +5,10 @@ import path from "path";
 
 export async function POST(req: Request) {
   const data = await req.formData();
-  const file: any = data.get("file");
+  const file = data.get("file");
 
   // file check
-  if (!file) {
+  if (!(file instanceof File)) {
     return Response.json({ error: "No file uploaded" });
   }
 

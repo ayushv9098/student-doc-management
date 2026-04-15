@@ -21,6 +21,7 @@ export type Student = {
   motherName: string;
   mobile: string;
   className: string;
+  rollNumber: string;
   aadhaar: string;
   samagraId: string;
   apaarId: string;
@@ -42,7 +43,28 @@ export async function loadStudentsFromSupabase(): Promise<Student[]> {
   }
 
   // Supabase columns ko Student type mein convert karo
-  return data.map((row: any) => ({
+  type StudentRow = {
+    id: string | number;
+    created_at?: string | null;
+    updated_at?: string | null;
+    full_name: string | null;
+    father_name: string | null;
+    mother_name: string | null;
+    mobile: string | null;
+    class: string | null;
+    roll_number: string | null;
+    aadhaar_number: string | null;
+    samagra_id: string | null;
+    apaar_id: string | null;
+  };
+
+  const toEpoch = (value?: string | null) => {
+    if (!value) return Date.now();
+    const parsed = Date.parse(value);
+    return Number.isNaN(parsed) ? Date.now() : parsed;
+  };
+
+  return (data as StudentRow[]).map((row) => ({
     id: String(row.id),
 fullName:   row.full_name ?? "",
 fatherName: row.father_name ?? "",
@@ -54,8 +76,8 @@ samagraId:  row.samagra_id ?? "",
 apaarId:    row.apaar_id ?? "",
 rollNumber: row.roll_number ?? "",
 documents:  {},
-createdAt:  row.id ?? 0,
-updatedAt:  row.id ?? 0,
+createdAt:  toEpoch(row.created_at),
+updatedAt:  toEpoch(row.updated_at),
   }));
 }
 

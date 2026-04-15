@@ -1,13 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { StudentForm, type StudentFormValues } from "@/components/students/StudentForm";
 import supabase from "@/lib/supabase";
 
 export default function NewStudentPage() {
-  const router = useRouter();
   const [saving, setSaving] = React.useState(false);
 
   async function handleSave(values: StudentFormValues) {
@@ -25,6 +22,7 @@ export default function NewStudentPage() {
           aadhaar_number: values.aadhaar,
           samagra_id:     values.samagraId,
           apaar_id:       values.apaarId,
+          roll_number:    values.rollNumber,
         })
         .select()
         .single();
@@ -35,11 +33,10 @@ export default function NewStudentPage() {
       }
 
       // Step 2: Uploaded files Supabase Storage mein save karo
-      const uploadedFiles = (values as any).uploadedFiles ?? [];
+      const uploadedFiles = values.uploadedFiles ?? [];
 
-      for (let i = 0; i < uploadedFiles.length; i++) {
-        const f = uploadedFiles[i];
-        const filePath = `${student.id}/${i}_${f.fileName}`;
+      for (const f of uploadedFiles) {
+        const filePath = `${student.id}/${f.fileName}`;
 
         // Storage mein upload (base64 se blob banao)
         const res = await fetch(f.dataUrl);
@@ -58,18 +55,21 @@ export default function NewStudentPage() {
         const { data: urlData } = supabase.storage
           .from("student-documents")
           .getPublicUrl(filePath);
+        console.log("Supabase upload public URL:", { filePath, publicUrl: urlData.publicUrl });
 
         // student_documents table mein save karo
-        await supabase.from("student_documents").insert({
-          student_id: String(student.id),
-          doc_type:   f.fileName,
-          file_name:  f.fileName,
+        const { error: docInsertError } = await supabase.from("student_documents").insert({
+          student_id: student.id,
+          file_name:  filePath,
           file_url:   urlData.publicUrl,
         });
+        if (docInsertError) {
+          console.error(`student_documents insert failed for ${filePath}:`, docInsertError.message);
+        }
       }
 
       alert("✅ Student saved!");
-      router.push("/students");
+      window.location.href = "/students";
 
     } catch (err) {
       console.error(err);
@@ -80,19 +80,16 @@ export default function NewStudentPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div>
+    <div className="mx-auto w-full max-w-6xl overflow-x-hidden px-4 py-6">
+      <div className="mb-4">
+        <div className="min-w-0">
           <h1 className="text-xl font-semibold text-black dark:text-white">Add Student</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
             Upload documents and see preview.
           </p>
         </div>
-        <Button variant="outline" onClick={() => router.push("/students")}>
-          Back
-        </Button>
       </div>
-      <StudentForm isSaving={saving} onSave={handleSave} />
+      <StudentForm isSaving={saving} cancelHref="/students" cancelLabel="Back" onSave={handleSave} />
     </div>
   );
 }

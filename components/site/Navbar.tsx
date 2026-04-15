@@ -5,15 +5,15 @@ import { cn } from "@/lib/utils";
 
 export function Navbar() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 w-full border-b border-zinc-200 bg-white text-black dark:border-zinc-800 dark:bg-zinc-950 dark:text-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-md bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold">
+    <header className="sticky inset-x-0 top-0 z-50 w-full border-b border-zinc-200 bg-white text-black dark:border-zinc-800 dark:bg-zinc-950 dark:text-white md:fixed">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2 sm:gap-4 sm:px-4 sm:py-3">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-black font-bold text-white dark:bg-white dark:text-black sm:h-9 sm:w-9">
             SD
           </div>
-          <div className="leading-tight">
+          <div className="min-w-0 leading-tight">
             <div className="text-sm font-semibold">Student Docs</div>
-            <div className="text-xs text-zinc-500 dark:text-zinc-300">
+            <div className="hidden text-xs text-zinc-500 dark:text-zinc-300 sm:block">
               Manage records and uploads
             </div>
           </div>
@@ -31,11 +31,11 @@ export function Navbar() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Link
             href="/login"
             className={cn(
-              "rounded-md border border-zinc-200 px-3 py-2 text-xs font-medium",
+              "rounded-md border border-zinc-200 px-2.5 py-1.5 text-[11px] font-medium sm:px-3 sm:py-2 sm:text-xs",
               "hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900"
             )}
           >
