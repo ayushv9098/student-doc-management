@@ -21,7 +21,7 @@ export default function NewStudentPage() {
           class:          values.className,
           aadhaar_number: values.aadhaar,
           samagra_id:     values.samagraId,
-          apaar_id:       values.apaarId,
+          scholar_id:       values.scholarId,
           roll_number:    values.rollNumber,
         })
         .select()

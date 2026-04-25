@@ -46,7 +46,7 @@ export function StudentForm({
     className: string;
     aadhaar: string;
     samagraId: string;
-    apaarId: string;
+    scholarId: string;
     rollNumber: string;
   };
   const [values, setValues] = React.useState({
@@ -57,7 +57,7 @@ export function StudentForm({
     className:  initial?.className  ?? "",
     aadhaar:    initial?.aadhaar    ?? "",
     samagraId:  initial?.samagraId  ?? "",
-    apaarId:    initial?.apaarId    ?? "",
+    scholarId:    initial?.scholarId    ?? "",
     rollNumber: initial?.rollNumber ?? "",
   });
 
@@ -150,10 +150,7 @@ export function StudentForm({
   return (
     <Card className="w-full overflow-x-hidden">
       <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}>
-        <CardHeader>
-          <CardTitle>{initial ? "Edit Student" : "Add Student"}</CardTitle>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">Fill details and upload documents. Preview loads immediately.</p>
-        </CardHeader>
+        
 
         <CardContent className="space-y-6">
           {formError ? (
@@ -198,8 +195,8 @@ export function StudentForm({
               <Input value={values.samagraId} onChange={(e) => setField("samagraId", e.target.value)} placeholder="optional" />
             </label>
             <label className="space-y-1">
-              <div className="text-xs font-medium text-zinc-700 dark:text-zinc-200">APAAR ID</div>
-              <Input value={values.apaarId} onChange={(e) => setField("apaarId", e.target.value)} placeholder="optional" />
+              <div className="text-xs font-medium text-zinc-700 dark:text-zinc-200">Scholar id</div>
+              <Input value={values.scholarId} onChange={(e) => setField("scholarId", e.target.value)} placeholder="optional" />
             </label>
           </div>
 

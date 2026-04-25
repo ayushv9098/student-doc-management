@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
@@ -35,6 +34,7 @@ export default function LoginPage() {
       return;
     }
 
+    // ✅ CHANGE: Ab dashboard (root) pe redirect karo
     router.push("/");
     router.refresh();
   }
@@ -45,36 +45,18 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle>Admin Login</CardTitle>
         </CardHeader>
-
         <form onSubmit={onSubmit}>
           <CardContent className="flex flex-col gap-4">
-
             <label className="flex flex-col gap-1 text-sm">
               <span className="font-medium">Email</span>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </label>
-
             <label className="flex flex-col gap-1 text-sm">
               <span className="font-medium">Password</span>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </label>
-
-            {error && (
-              <p className="text-sm text-red-600">{error}</p>
-            )}
-
+            {error && <p className="text-sm text-red-600">{error}</p>}
           </CardContent>
-
           <CardFooter>
             <Button type="submit" className="w-full" disabled={pending}>
               {pending ? "Signing in..." : "Sign in"}

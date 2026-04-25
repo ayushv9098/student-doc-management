@@ -16,7 +16,7 @@ type StudentRow = {
   mother_name: string | null;
   aadhaar_number: string | null;
   samagra_id: string | null;
-  apaar_id: string | null;
+  scholar_id: string | null;
 };
 
 type StudentDocument = {
@@ -101,7 +101,7 @@ export default function StudentProfilePage() {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <DetailItem label="Aadhaar" value={student.aadhaar_number || "—"} />
                   <DetailItem label="Samagra ID" value={student.samagra_id || "—"} />
-                  <DetailItem label="APAAR ID" value={student.apaar_id || "—"} />
+                  <DetailItem label="Scholar ID" value={student.scholar_id || "—"} />
                 </div>
               </div>
             </CardContent>
@@ -114,33 +114,113 @@ export default function StudentProfilePage() {
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                 {documents.map((doc) => {
-                  const hasValidPath = !!doc.file_name && /^\d+\/.+/.test(doc.file_name);
-                  const { data: urlData } = doc.file_name
-                    ? supabase.storage.from("student-documents").getPublicUrl(doc.file_name)
-                    : { data: { publicUrl: doc.file_url } };
-                  const publicUrl = urlData.publicUrl || doc.file_url;
-                  console.log("Student document URL check:", {
-                    fileName: doc.file_name,
-                    hasValidPath,
-                    publicUrl,
-                  });
-                  const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc.file_name ?? "");
-                  return (
-                    <Card key={doc.id} className="overflow-hidden">
-                      <CardContent className="p-3 space-y-2">
-                        {isImage ? (
-                          <img src={publicUrl} alt={doc.file_name ?? "document"} className="h-40 w-full rounded-md object-cover border border-zinc-200" />
-                        ) : (
-                          <div className="flex h-40 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
-                            <span className="text-3xl">PDF</span>
-                          </div>
-                        )}
-                        <div className="truncate text-xs font-medium text-zinc-700 dark:text-zinc-200">{doc.file_name}</div>
-                        <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline">View</a>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+  const publicUrl = doc.file_url; // direct DB url use
+
+  const isImage = true; // uploaded photos always preview
+
+  return (
+    <Card key={doc.id} className="overflow-hidden">
+      <CardContent className="p-3 space-y-2">
+
+        {isImage ? (
+          <img
+            src={publicUrl}
+            alt="document"
+            className="h-40 w-full rounded-md object-cover border border-zinc-200"
+            onError={(e) => {
+              console.log("image failed loading");
+              e.currentTarget.src =
+                "https://placehold.co/400x300?text=No+Preview";
+            }}
+          />
+        ) : (
+          <div className="flex h-40 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
+            <span className="text-3xl">PDF</span>
+          </div>
+        )}
+
+        <div className="truncate text-xs font-medium text-zinc-700 dark:text-zinc-200">
+          {doc.file_name}
+        </div>
+
+        <a
+          href={publicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-blue-600 underline"
+        >
+          View
+        </a>
+        <button
+onClick={async () => {
+
+ const ok = window.confirm(
+   "Download this document?"
+ );
+
+ if(!ok) return;
+
+ const res = await fetch(publicUrl);
+ const blob = await res.blob();
+
+ const url = window.URL.createObjectURL(blob);
+ const a = document.createElement("a");
+
+ a.href = url;
+ a.download = doc.file_name || "document";
+ a.click();
+
+ window.URL.revokeObjectURL(url);
+
+}}
+className="text-xs text-green-600 underline ml-3"
+>
+Download
+</button>
+        <button
+onClick={async () => {
+ const ok = window.confirm(
+  "Are you sure you want to delete this image?"
+ );
+ if (!ok) return;
+
+ try {
+
+   // DB record delete (important)
+   const { error } = await supabase
+   .from("student_documents")
+   .delete()
+   .eq("id", Number(doc.id));
+  
+  if(error){
+   alert(error.message);
+   return;
+  }
+   // storage file delete
+   if (doc.file_name?.trim()) {
+     await supabase.storage
+       .from("student-documents")
+       .remove([doc.file_name.trim()]);
+   }
+
+   // remove from screen
+   setDocuments(prev =>
+      prev.filter(d=>d.id!==doc.id)
+   );
+
+ } catch(err){
+   console.error(err);
+ }
+}}
+className="text-xs text-red-600 underline ml-3"
+>
+Delete
+</button>
+
+      </CardContent>
+    </Card>
+  );
+})}
               </div>
             )}
           </div>

@@ -49,7 +49,7 @@ function matchesQuery(student: Student, query: string) {
     student.mobile.toLowerCase().includes(q) ||
     (student.aadhaar ?? "").toLowerCase().includes(q) ||
     (student.samagraId ?? "").toLowerCase().includes(q) ||
-    (student.apaarId ?? "").toLowerCase().includes(q) ||
+    (student.scholarId ?? "").toLowerCase().includes(q) ||
     student.id.toLowerCase().includes(q)
   );
 }
@@ -130,35 +130,104 @@ export function StudentListClient() {
   async function handleSaveStudent(values: StudentFormValues) {
     if (!editing) return;
     setSavingEdit(true);
+  
     try {
+      // student details update
       const { error } = await supabase
         .from("students")
         .update({
-          full_name:      values.fullName,
-          father_name:    values.fatherName,
-          mother_name:    values.motherName,
-          mobile:         values.mobile.replace(/\s+/g, ""),
-          class:          values.className,
+          full_name: values.fullName,
+          father_name: values.fatherName,
+          mother_name: values.motherName,
+          mobile: values.mobile.replace(/\s+/g, ""),
+          class: values.className,
           aadhaar_number: values.aadhaar.replace(/\s+/g, ""),
-          samagra_id:     values.samagraId,
-          apaar_id:       values.apaarId,
+          samagra_id: values.samagraId,
+          scholar_id: values.scholarId,
         })
-        .eq("id", editing.id);
-
+        .eq("id", Number(editing.id));
+  
       if (error) {
         alert("Update error: " + error.message);
         return;
       }
-
-      // Local state update karo
-      setStudents((prev) =>
-        prev.map((s) =>
-          s.id === editing.id
-            ? { ...s, ...values, mobile: values.mobile.replace(/\s+/g, ""), aadhaar: values.aadhaar.replace(/\s+/g, ""), updatedAt: Date.now() }
-            : s
+  
+  
+      // =========================
+      // NEW PHOTOS/DOCS UPLOAD
+      // =========================
+      if (values.uploadedFiles?.length) {
+  
+        // optional old docs delete (replace old photos)
+        await supabase
+          .from("student_documents")
+          .delete()
+          .eq("student_id", editing.id);
+  
+  
+        for (const file of values.uploadedFiles) {
+  
+          const filePath =
+            `${editing.id}/${Date.now()}-${file.fileName}`;
+  
+          const blob = await fetch(file.dataUrl).then(r=>r.blob());
+  
+          const { error: uploadError } = await supabase.storage
+            .from("student-documents")
+            .upload(
+               filePath,
+               blob,
+               {
+                 upsert:true,
+                 contentType:file.mimeType
+               }
+            );
+  
+          if(uploadError){
+            console.log(uploadError);
+            continue;
+          }
+  
+  
+          const { data:urlData } = supabase.storage
+            .from("student-documents")
+            .getPublicUrl(filePath);
+  
+  
+          await supabase
+            .from("student_documents")
+            .insert({
+               student_id: editing.id,
+               doc_type:"photo",
+               file_name:file.fileName,
+               file_url:urlData.publicUrl
+            });
+        }
+      }
+  
+  
+      // local state update
+      setStudents((prev)=>
+        prev.map((s)=>
+          s.id===editing.id
+          ?{
+            ...s,
+            fullName: values.fullName,
+            fatherName: values.fatherName,
+            motherName: values.motherName,
+            mobile: values.mobile,
+            className: values.className,
+            aadhaar: values.aadhaar,
+            samagraId: values.samagraId,
+            scholarId: values.scholarId,
+            updatedAt: Date.now()
+          }
+          :s
         )
       );
+  
       setEditOpen(false);
+  
     } finally {
       setSavingEdit(false);
     }
@@ -193,7 +262,7 @@ export function StudentListClient() {
           <CardTitle>Students</CardTitle>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
-              Search instantly by name, mobile, Aadhaar, Samagra ID, APAAR ID or student ID.
+              Search instantly by name, mobile, Aadhaar, Samagra ID, scholar ID or student ID.
             </p>
             <div className="w-full sm:w-[340px]">
               <Input
@@ -227,17 +296,18 @@ export function StudentListClient() {
               <table className="w-full table-fixed caption-bottom text-sm">
                 <TableHeader className="sticky top-0 z-10 bg-white dark:bg-zinc-950">
                   <TableRow>
-                    <TableHead className="w-[34%]">Full Name</TableHead>
-                    <TableHead className="w-[18%]">Mobile</TableHead>
-                    <TableHead className="w-[16%]">Class</TableHead>
-                    <TableHead className="w-[20%]">Aadhaar</TableHead>
-                    <TableHead className="w-[12%] text-right">Actions</TableHead>
+                  <TableHead className="w-[40%]">Full Name</TableHead>
+                  <TableHead className="w-[20%]">Class</TableHead>
+                  <TableHead className="w-[25%]">Scholar ID</TableHead>
+                  <TableHead className="w-[15%] min-w-[80px] text-right">
+                     Action
+                  </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {visibleRange.topPadding > 0 ? (
                     <TableRow aria-hidden="true">
-                      <TableCell colSpan={5} style={{ height: `${visibleRange.topPadding}px`, padding: 0 }} />
+                      <TableCell colSpan={4} style={{ height: `${visibleRange.topPadding}px`, padding: 0 }} />
                     </TableRow>
                   ) : null}
 
@@ -253,10 +323,12 @@ export function StudentListClient() {
                           <span className="truncate text-[11px] text-zinc-500">{s.id}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="truncate">{s.mobile}</TableCell>
                       <TableCell className="truncate">{s.className}</TableCell>
-                      <TableCell className="truncate">{s.aadhaar || "—"}</TableCell>
-                      <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <TableCell className="truncate">{s.scholarId || "—"}</TableCell>
+                      <TableCell
+                       className="w-[80px] whitespace-nowrap text-right"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" aria-label="More actions">
@@ -286,7 +358,7 @@ export function StudentListClient() {
 
                   {visibleRange.bottomPadding > 0 ? (
                     <TableRow aria-hidden="true">
-                      <TableCell colSpan={5} style={{ height: `${visibleRange.bottomPadding}px`, padding: 0 }} />
+                      <TableCell colSpan={4} style={{ height: `${visibleRange.bottomPadding}px`, padding: 0 }} />
                     </TableRow>
                   ) : null}
                 </TableBody>

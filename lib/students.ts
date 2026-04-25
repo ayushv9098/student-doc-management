@@ -24,7 +24,7 @@ export type Student = {
   rollNumber: string;
   aadhaar: string;
   samagraId: string;
-  apaarId: string;
+  scholarId: string;
   documents: Partial<Record<DocumentType, StoredDocument>>;
   createdAt: number;
   updatedAt: number;
@@ -55,7 +55,7 @@ export async function loadStudentsFromSupabase(): Promise<Student[]> {
     roll_number: string | null;
     aadhaar_number: string | null;
     samagra_id: string | null;
-    apaar_id: string | null;
+    scholar_id: string | null;
   };
 
   const toEpoch = (value?: string | null) => {
@@ -73,7 +73,7 @@ mobile:     row.mobile ?? "",
 className:  row.class ?? "",
 aadhaar:    row.aadhaar_number ?? "",
 samagraId:  row.samagra_id ?? "",
-apaarId:    row.apaar_id ?? "",
+scholarId:    row.scholar_id ?? "",
 rollNumber: row.roll_number ?? "",
 documents:  {},
 createdAt:  toEpoch(row.created_at),
