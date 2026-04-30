@@ -1,30 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-import { Button } from "@/components/ui/button";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { usePathname } from "next/navigation";
 
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
   const isLoginPage = pathname === "/login";
-
-  async function handleLogout() {
-    const confirmLogout = window.confirm("Are you sure you want to logout?");
-    if (!confirmLogout) return;
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      router.push("/login");
-    } else {
-      alert("Logout failed. Please try again.");
-    }
-  }
+  const isSignupPage = pathname === "/signup";
 
   return (
     <header className="sticky inset-x-0 top-0 z-50 w-full border-b border-zinc-200 bg-white text-black dark:border-zinc-800 dark:bg-zinc-950 dark:text-white md:fixed">
@@ -40,8 +22,8 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Navigation Links – login page par hide */}
-        {!isLoginPage && (
+        {/* Navigation Links – hide on login and signup pages */}
+        {!isLoginPage && !isSignupPage && (
           <nav className="hidden items-center gap-5 text-sm md:flex">
             <Link href="/" className="hover:text-zinc-600">Dashboard</Link>
             <Link href="/students" className="hover:text-zinc-600">Students</Link>
@@ -49,11 +31,13 @@ export function Navbar() {
           </nav>
         )}
 
-        {/* 🔥 Logout Button – sirf tab dikhe jab login page NA ho */}
-        {!isLoginPage && (
-          <div className="flex shrink-0 items-center gap-2">
-            <Button onClick={handleLogout} variant="outline">Logout</Button>
-          </div>
+        {/* Avatar (simple div) – only show when NOT on login or signup page */}
+        {!isLoginPage && !isSignupPage && (
+          <Link href="/profile">
+            <div className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-black text-sm font-medium text-white dark:bg-white dark:text-black">
+              A
+            </div>
+          </Link>
         )}
       </div>
     </header>
