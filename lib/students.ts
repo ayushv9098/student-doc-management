@@ -32,11 +32,13 @@ export type Student = {
 
 // Supabase se saare students fetch karo
 export async function loadStudentsFromSupabase(): Promise<Student[]> {
-  const { data, error } = await supabase
-    .from("students")
-    .select("*")
-    .order("id", { ascending: false });
+  const { data: userData } = await supabase.auth.getUser();
 
+const { data, error } = await supabase
+  .from("students")
+  .select("*")
+  .eq("owner_id", userData.user?.id)
+  .order("id", { ascending: false });
   if (error) {
     console.error("Error loading students:", error.message);
     return [];

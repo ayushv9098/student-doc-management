@@ -59,8 +59,14 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "Signing in..." : "Sign in"}
+              {pending ? "Loging in..." : "Login in"}
             </Button>
+            <p className="text-sm text-center mt-4">
+ New School?
+ <a href="/signup" className="ml-2 underline font-medium">
+   Sign Up
+ </a>
+</p>
           </CardFooter>
         </form>
       </Card>
