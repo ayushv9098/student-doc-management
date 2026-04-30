@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,30 +24,43 @@ export default function SignupPage() {
 
   async function handleSignup(e: any) {
     e.preventDefault();
-
     setLoading(true);
     setMsg("");
 
-    const { data, error } = await supabase.auth.signUp({
+    // 1. Create user in Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error) {
-      setMsg(error.message);
+    if (authError) {
+      setMsg(authError.message);
       setLoading(false);
       return;
     }
 
-    // profile save
-    await supabase.from("profiles").insert({
-      id: data.user?.id,
+    const userId = authData.user?.id;
+    if (!userId) {
+      setMsg("User creation failed");
+      setLoading(false);
+      return;
+    }
+
+    // 2. Insert profile with school_name and admin_name
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: userId,
       school_name: schoolName,
       admin_name: adminName,
     });
 
-    setMsg("Account created successfully");
+    if (profileError) {
+      console.error("Profile insert error:", profileError);
+      setMsg("Account created but profile save failed. Please contact support.");
+      setLoading(false);
+      return;
+    }
 
+    setMsg("Account created successfully!");
     setTimeout(() => {
       router.push("/login");
     }, 1500);
@@ -67,14 +79,12 @@ export default function SignupPage() {
               value={schoolName}
               onChange={(e) => setSchoolName(e.target.value)}
               required
-              className="w-full"
             />
             <Input
               placeholder="Admin Name"
               value={adminName}
               onChange={(e) => setAdminName(e.target.value)}
               required
-              className="w-full"
             />
             <Input
               type="email"
@@ -82,7 +92,6 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full"
             />
             <Input
               type="password"
@@ -90,34 +99,20 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full"
             />
             {msg && (
-              <p
-                className={`text-sm ${
-                  msg.includes("successfully")
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
+              <p className={`text-sm ${msg.includes("successfully") ? "text-green-600" : "text-red-600"}`}>
                 {msg}
               </p>
             )}
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full"
-              variant="default"
-            >
+            <Button type="submit" disabled={loading} className="w-full">
               {loading ? "Creating..." : "Create Account"}
             </Button>
-            <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="text-center text-sm text-zinc-600">
               Already have an account?
-              <Link href="/login" className="ml-2 underline hover:text-black dark:hover:text-white">
-                Login
-              </Link>
+              <a href="/login" className="ml-2 underline">Login</a>
             </p>
           </CardFooter>
         </form>

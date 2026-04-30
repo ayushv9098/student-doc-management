@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { loadStudentsFromSupabase } from "@/lib/students";
 
-// ✅ Student type define karo
+// ✅ Student type define 
 type Student = {
   id: string;
   fullName: string;
@@ -137,6 +137,9 @@ export default function Home() {
             )}
           </CardContent>
         </Card>
+        <div className="text-center text-xs text-zinc-400 pt-8 mt-8 border-t">
+  Created with ❤️ by AV infra
+</div>
       </div>
     </div>
   );

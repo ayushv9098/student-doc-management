@@ -14,7 +14,7 @@ export function Navbar() {
         {/* Logo / Title */}
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-black font-bold text-white dark:bg-white dark:text-black sm:h-9 sm:w-9">
-            SD
+            AV
           </div>
           <div className="min-w-0 leading-tight">
             <div className="text-sm font-semibold">Ayushman Educational Academy</div>
