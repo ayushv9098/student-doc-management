@@ -137,8 +137,12 @@ export default function Home() {
             )}
           </CardContent>
         </Card>
-        <div className="text-center text-xs text-zinc-400 pt-8 mt-8 border-t">
-  Created with ❤️ by AV infra
+        <div className="pt-6 text-center text-xs text-zinc-400 border-t border-zinc-100 dark:border-zinc-800">
+  © 2026 AV Infra. All rights reserved. <br />
+  Designed & Developed with ❤️ by 
+  <span className="font-medium text-zinc-400 dark:text-zinc-300 ml-1">
+    AV Infra
+  </span>
 </div>
       </div>
     </div>
