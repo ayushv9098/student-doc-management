@@ -145,8 +145,7 @@ export default function ProfilePage() {
 
           {/* 🏷️ BRANDING FOOTER - Created by Ayush Vishwakarma */}
           <div className="pt-6 text-center text-xs text-zinc-400 border-t border-zinc-100 dark:border-zinc-800">
-  © 2026 AV Infra. All rights reserved. <br />
-  Designed & Developed with ❤️ by 
+          © 2026 Designed & Developed by AV Infra 
   <span className="font-medium text-zinc-400 dark:text-zinc-300 ml-1">
     AV Infra
   </span>
