@@ -29,7 +29,7 @@ const { data: student, error } = await supabase
   
     // 🔥 NEW
     father_occupation: values.fatherOccupation,
-    date_of_birth: values.dateOfBirth,
+    date_of_birth: convertToDBDate(values.dateOfBirth),
     caste: values.caste,
     previous_school: values.previousSchool,
     address: values.address,
