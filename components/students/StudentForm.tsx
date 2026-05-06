@@ -80,6 +80,21 @@ export function StudentForm({
     setValues((prev) => ({ ...prev, [key]: v }));
   };
 
+  // ✅ FIXED: function yaha hona chahiye
+  function formatDOB(value: string) {
+    let v = value.replace(/\D/g, "");
+
+    if (v.length > 8) v = v.slice(0, 8);
+
+    if (v.length >= 5) {
+      return `${v.slice(0, 2)}-${v.slice(2, 4)}-${v.slice(4)}`;
+    } else if (v.length >= 3) {
+      return `${v.slice(0, 2)}-${v.slice(2)}`;
+    } else {
+      return v;
+    }
+  }
+
   // Shared processor for both gallery + camera
   async function processFiles(files: File[], inputEl?: HTMLInputElement) {
     if (!files.length) return;
@@ -131,6 +146,9 @@ export function StudentForm({
     if (!/^\d{10}$/.test(mobile)) return "Mobile Number must be 10 digits.";
     if (values.aadhaar.trim() && !/^\d{12}$/.test(values.aadhaar.replace(/\s+/g, "")))
       return "Aadhaar Number must be 12 digits.";
+    if (values.dateOfBirth && !/^\d{2}-\d{2}-\d{4}$/.test(values.dateOfBirth)) {
+      return "Date of Birth must be in DD-MM-YYYY format.";
+    }
     return null;
   }
 
@@ -219,14 +237,15 @@ export function StudentForm({
             />
             </label>
 
-<label className="space-y-1">
-  <div className="text-xs font-medium  text-zinc-700 dark:text-zinc-200">Date of Birth</div>
-  <Input
-    type="date"
-    value={values.dateOfBirth}
-    onChange={(e) => setField("dateOfBirth", e.target.value)}
-  />
-</label>
+            <label className="space-y-1">
+            <div className="text-xs font-medium  text-zinc-700 dark:text-zinc-200">Date of Birth</div>
+            <Input
+               type="text"
+               value={values.dateOfBirth}
+               onChange={(e) => setField("dateOfBirth", formatDOB(e.target.value))}
+                maxLength={10}
+              />
+              </label>
 
 <label className="space-y-1">
   <div className="text-xs font-medium  text-zinc-700 dark:text-zinc-200">Caste</div>
