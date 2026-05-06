@@ -3,6 +3,12 @@
 import * as React from "react";
 import { StudentForm, type StudentFormValues } from "@/components/students/StudentForm";
 import supabase from "@/lib/supabase";
+function convertToDBDate(dob: string) {
+  if (!dob) return null;
+
+  const [dd, mm, yyyy] = dob.split("-");
+  return `${yyyy}-${mm}-${dd}`;
+}
 
 export default function NewStudentPage() {
   const [saving, setSaving] = React.useState(false);
