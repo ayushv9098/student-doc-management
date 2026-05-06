@@ -17,6 +17,11 @@ type StudentRow = {
   aadhaar_number: string | null;
   samagra_id: string | null;
   scholar_id: string | null;
+    father_occupation: string | null;
+  date_of_birth: string | null;
+  caste: string | null;
+  previous_school: string | null;
+  address: string | null;
 };
 
 type StudentDocument = {
@@ -102,6 +107,11 @@ export default function StudentProfilePage() {
                   <DetailItem label="Aadhaar" value={student.aadhaar_number || "—"} />
                   <DetailItem label="Samagra ID" value={student.samagra_id || "—"} />
                   <DetailItem label="Scholar ID" value={student.scholar_id || "—"} />
+                  <DetailItem label="Date of Birth" value={student.date_of_birth || "—"} />
+    <DetailItem label="Caste" value={student.caste || "—"} />
+    <DetailItem label="Previous School" value={student.previous_school || "—"} />
+    <DetailItem label="Address" value={student.address || "—"} />
+                  
                 </div>
               </div>
             </CardContent>

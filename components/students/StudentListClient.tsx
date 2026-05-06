@@ -144,6 +144,11 @@ export function StudentListClient() {
           aadhaar_number: values.aadhaar.replace(/\s+/g, ""),
           samagra_id: values.samagraId,
           scholar_id: values.scholarId,
+          father_occupation: values.fatherOccupation,
+          date_of_birth: values.dateOfBirth,
+          caste: values.caste,
+          previous_school: values.previousSchool,
+          address: values.address,
         })
         .eq("id", Number(editing.id));
   
@@ -220,7 +225,12 @@ export function StudentListClient() {
             aadhaar: values.aadhaar,
             samagraId: values.samagraId,
             scholarId: values.scholarId,
-            updatedAt: Date.now()
+            updatedAt: Date.now(),
+            fatherOccupation: values.fatherOccupation,
+            dateOfBirth: values.dateOfBirth,
+            caste: values.caste,
+            previousSchool: values.previousSchool,
+            address: values.address,
           }
           :s
         )

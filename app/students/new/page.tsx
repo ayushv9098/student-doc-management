@@ -12,21 +12,28 @@ export default function NewStudentPage() {
     try {
       // Step 1: Student info save karo
       const { data: userData } = await supabase.auth.getUser();
+      
 
 const { data: student, error } = await supabase
   .from("students")
   .insert({
-    full_name:      values.fullName,
-    father_name:    values.fatherName,
-    mother_name:    values.motherName,
-    mobile:         values.mobile,
-    class:          values.className,
+    full_name: values.fullName,
+    father_name: values.fatherName,
+    mother_name: values.motherName,
+    mobile: values.mobile,
+    class: values.className,
     aadhaar_number: values.aadhaar,
-    samagra_id:     values.samagraId,
-    scholar_id:     values.scholarId,
-    roll_number:    values.rollNumber,
-
-    owner_id: userData.user?.id, // 🔥 important
+    samagra_id: values.samagraId,
+    scholar_id: values.scholarId,
+    roll_number: values.rollNumber,
+  
+    // 🔥 NEW
+    father_occupation: values.fatherOccupation,
+    date_of_birth: values.dateOfBirth,
+    caste: values.caste,
+    previous_school: values.previousSchool,
+    address: values.address,
+    owner_id: userData.user?.id,
   })
         .select()
         .single();

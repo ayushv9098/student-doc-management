@@ -28,6 +28,11 @@ export type Student = {
   documents: Partial<Record<DocumentType, StoredDocument>>;
   createdAt: number;
   updatedAt: number;
+  fatherOccupation: string;
+dateOfBirth: string;
+caste: string;
+previousSchool: string;
+address: string;
 };
 
 // Supabase se saare students fetch karo

@@ -48,6 +48,11 @@ export function StudentForm({
     samagraId: string;
     scholarId: string;
     rollNumber: string;
+    fatherOccupation: string;
+    dateOfBirth: string;
+    caste: string;
+    previousSchool: string;
+    address: string;
   };
   const [values, setValues] = React.useState({
     fullName:   initial?.fullName   ?? "",
@@ -59,6 +64,12 @@ export function StudentForm({
     samagraId:  initial?.samagraId  ?? "",
     scholarId:    initial?.scholarId    ?? "",
     rollNumber: initial?.rollNumber ?? "",
+    fatherOccupation: initial?.fatherOccupation ?? "",
+    dateOfBirth: initial?.dateOfBirth ?? "",
+    caste: initial?.caste ?? "",
+    previousSchool: initial?.previousSchool ?? "",
+    address: initial?.address ?? "",
+    
   });
 
   const [uploadedFiles, setUploadedFiles] = React.useState<UploadedFile[]>([]);
@@ -198,6 +209,55 @@ export function StudentForm({
               <div className="text-xs font-medium text-zinc-700 dark:text-zinc-200">Scholar id</div>
               <Input value={values.scholarId} onChange={(e) => setField("scholarId", e.target.value)} placeholder="optional" />
             </label>
+            {/* NEW FIELDS */}
+
+            <label className="space-y-1">
+            <div className="text-xs font-medium text-zinc-700 dark:text-zinc-200">Father Occupation</div>
+            <Input
+                value={values.fatherOccupation}
+                onChange={(e) => setField("fatherOccupation", e.target.value)}placeholder="optional"
+            />
+            </label>
+
+<label className="space-y-1">
+  <div className="text-xs font-medium  text-zinc-700 dark:text-zinc-200">Date of Birth</div>
+  <Input
+    type="date"
+    value={values.dateOfBirth}
+    onChange={(e) => setField("dateOfBirth", e.target.value)}
+  />
+</label>
+
+<label className="space-y-1">
+  <div className="text-xs font-medium  text-zinc-700 dark:text-zinc-200">Caste</div>
+  <select
+    className="w-full border rounded px-3 py-2"
+    value={values.caste}
+    onChange={(e) => setField("caste", e.target.value)}
+  >
+    <option value="">Select</option>
+    <option value="SC">SC</option>
+    <option value="ST">ST</option>
+    <option value="OBC">OBC</option>
+    <option value="General">General</option>
+  </select>
+</label>
+
+<label className="space-y-1">
+  <div className="text-xs font-medium  text-zinc-700 dark:text-zinc-200">Previous School</div>
+  <Input
+    value={values.previousSchool}
+    onChange={(e) => setField("previousSchool", e.target.value)}placeholder="optional"
+  />
+</label>
+
+<label className="space-y-1 lg:col-span-3">
+  <div className="text-xs font-medium  text-zinc-700 dark:text-zinc-200">Address</div>
+  <Input
+    value={values.address}
+    onChange={(e) => setField("address", e.target.value)}placeholder="optional"
+  />
+</label>
           </div>
 
           {/* Documents Upload */}
