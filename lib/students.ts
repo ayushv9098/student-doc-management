@@ -63,6 +63,13 @@ const { data, error } = await supabase
     aadhaar_number: string | null;
     samagra_id: string | null;
     scholar_id: string | null;
+  
+    // 🔥 ADD THESE
+    father_occupation: string | null;
+    date_of_birth: string | null;
+    caste: string | null;
+    previous_school: string | null;
+    address: string | null;
   };
 
   const toEpoch = (value?: string | null) => {
@@ -73,18 +80,26 @@ const { data, error } = await supabase
 
   return (data as StudentRow[]).map((row) => ({
     id: String(row.id),
-fullName:   row.full_name ?? "",
-fatherName: row.father_name ?? "",
-motherName: row.mother_name ?? "",
-mobile:     row.mobile ?? "",
-className:  row.class ?? "",
-aadhaar:    row.aadhaar_number ?? "",
-samagraId:  row.samagra_id ?? "",
-scholarId:    row.scholar_id ?? "",
-rollNumber: row.roll_number ?? "",
-documents:  {},
-createdAt:  toEpoch(row.created_at),
-updatedAt:  toEpoch(row.updated_at),
+    fullName: row.full_name ?? "",
+    fatherName: row.father_name ?? "",
+    motherName: row.mother_name ?? "",
+    mobile: row.mobile ?? "",
+    className: row.class ?? "",
+    aadhaar: row.aadhaar_number ?? "",
+    samagraId: row.samagra_id ?? "",
+    scholarId: row.scholar_id ?? "",
+    rollNumber: row.roll_number ?? "",
+  
+    // 🔥 NEW
+    fatherOccupation: row.father_occupation ?? "",
+    dateOfBirth: row.date_of_birth ?? "",
+    caste: row.caste ?? "",
+    previousSchool: row.previous_school ?? "",
+    address: row.address ?? "",
+  
+    documents: {},
+    createdAt: toEpoch(row.created_at),
+    updatedAt: toEpoch(row.updated_at),
   }));
 }
 
