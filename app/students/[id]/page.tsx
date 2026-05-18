@@ -88,7 +88,7 @@ export default function StudentProfilePage() {
         <Card className="border-dashed py-12 text-center">
           <CardContent>
             <p className="text-zinc-500">Student not found.</p>
-            <Button asChild variant="link" className="mt-2">
+            <Button asChild variant="ghost" className="mt-2">
               <Link href="/students">Go back</Link>
             </Button>
           </CardContent>
