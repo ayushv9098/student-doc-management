@@ -80,15 +80,17 @@ export function StudentForm({
     setValues((prev) => ({ ...prev, [key]: v }));
   };
 
-  // ✅ FIXED: function yaha hona chahiye
+  // ✅ Updated: MM-DD-YYYY format
   function formatDOB(value: string) {
     let v = value.replace(/\D/g, "");
 
     if (v.length > 8) v = v.slice(0, 8);
 
     if (v.length >= 5) {
+      // MM-DD-YYYY
       return `${v.slice(0, 2)}-${v.slice(2, 4)}-${v.slice(4)}`;
     } else if (v.length >= 3) {
+      // MM-DD
       return `${v.slice(0, 2)}-${v.slice(2)}`;
     } else {
       return v;
@@ -147,7 +149,7 @@ export function StudentForm({
     if (values.aadhaar.trim() && !/^\d{12}$/.test(values.aadhaar.replace(/\s+/g, "")))
       return "Aadhaar Number must be 12 digits.";
     if (values.dateOfBirth && !/^\d{2}-\d{2}-\d{4}$/.test(values.dateOfBirth)) {
-      return "Date of Birth must be in DD-MM-YYYY format.";
+      return "Date of Birth must be in MM-DD-YYYY format.";
     }
     return null;
   }
@@ -244,6 +246,7 @@ export function StudentForm({
                value={values.dateOfBirth}
                onChange={(e) => setField("dateOfBirth", formatDOB(e.target.value))}
                 maxLength={10}
+                placeholder="MM-DD-YYYY"
               />
               </label>
 

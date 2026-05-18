@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { loadStudentsFromSupabase } from "@/lib/students";
+import supabase from "@/lib/supabase";
 
 // ✅ Student type define 
 type Student = {
@@ -14,11 +14,6 @@ type Student = {
   mobile: string;
   className: string;
 };
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export default function Home() {
   const router = useRouter();

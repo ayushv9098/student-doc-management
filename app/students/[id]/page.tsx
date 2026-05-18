@@ -62,175 +62,174 @@ export default function StudentProfilePage() {
     load();
   }, [id]);
 
-  if (loading) return <div className="p-6 text-sm text-zinc-500">Loading...</div>;
+  if (loading) return (
+    <div className="flex h-[50vh] items-center justify-center">
+      <div className="text-zinc-500 animate-pulse font-medium">Loading profile...</div>
+    </div>
+  );
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="text-xl font-semibold text-black dark:text-white">Student Profile</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">Student ID: {id}</p>
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Student Profile</h1>
+          <div className="mt-1 flex items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
+              ID: {id}
+            </span>
+          </div>
         </div>
-        <Button asChild className="w-full sm:w-auto" variant="outline">
-          <Link href="/students">Back</Link>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/students">← Back to List</Link>
         </Button>
       </div>
 
       {!student ? (
-        <Card>
-          <CardHeader><CardTitle>Not found</CardTitle></CardHeader>
-          <CardContent>Student not found.</CardContent>
+        <Card className="border-dashed py-12 text-center">
+          <CardContent>
+            <p className="text-zinc-500">Student not found.</p>
+            <Button asChild variant="link" className="mt-2">
+              <Link href="/students">Go back</Link>
+            </Button>
+          </CardContent>
         </Card>
       ) : (
-        <div className="space-y-5">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl">{student.full_name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <DetailItem label="Student ID" value={String(student.id)} />
-                <DetailItem label="Class" value={student.class || "—"} />
-                <DetailItem label="Mobile" value={student.mobile || "—"} />
-                <DetailItem label="Roll Number" value={student.roll_number || "—"} />
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* Main Info */}
+          <div className="lg:col-span-2 space-y-8">
+            <Card className="overflow-hidden border-zinc-200 dark:border-zinc-800">
+              <div className="bg-zinc-50 px-6 py-4 border-b border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Basic Information</h3>
               </div>
-              <div>
-                <h2 className="mb-3 text-sm font-semibold">Family Details</h2>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <DetailItem label="Father Name" value={student.father_name || "—"} />
-                  <DetailItem label="Mother Name" value={student.mother_name || "—"} />
-                </div>
-              </div>
-              <div>
-                <h2 className="mb-3 text-sm font-semibold">ID Information</h2>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  <DetailItem label="Aadhaar" value={student.aadhaar_number || "—"} />
-                  <DetailItem label="Samagra ID" value={student.samagra_id || "—"} />
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <DetailItem label="Full Name" value={student.full_name || "—"} />
+                  <DetailItem label="Class" value={student.class || "—"} />
+                  <DetailItem label="Mobile Number" value={student.mobile || "—"} />
+                  <DetailItem label="Roll Number" value={student.roll_number || "—"} />
                   <DetailItem label="Scholar ID" value={student.scholar_id || "—"} />
                   <DetailItem label="Date of Birth" value={student.date_of_birth || "—"} />
-    <DetailItem label="Caste" value={student.caste || "—"} />
-    <DetailItem label="Previous School" value={student.previous_school || "—"} />
-    <DetailItem label="Address" value={student.address || "—"} />
-                  
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border-zinc-200 dark:border-zinc-800">
+              <div className="bg-zinc-50 px-6 py-4 border-b border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Family & Additional Details</h3>
               </div>
-            </CardContent>
-          </Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <DetailItem label="Father's Name" value={student.father_name || "—"} />
+                  <DetailItem label="Mother's Name" value={student.mother_name || "—"} />
+                  <DetailItem label="Father's Occupation" value={student.father_occupation || "—"} />
+                  <DetailItem label="Caste" value={student.caste || "—"} />
+                </div>
+                <div className="mt-6 space-y-6">
+                  <DetailItem label="Previous School" value={student.previous_school || "—"} />
+                  <DetailItem label="Permanent Address" value={student.address || "—"} />
+                </div>
+              </CardContent>
+            </Card>
 
-          <div>
-            <h2 className="mb-3 text-sm font-semibold">Documents ({documents.length})</h2>
-            {documents.length === 0 ? (
-              <div className="rounded-md border p-4 text-sm text-zinc-500">No documents uploaded.</div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-                {documents.map((doc) => {
-  const publicUrl = doc.file_url; // direct DB url use
-
-  const isImage = true; // uploaded photos always preview
-
-  return (
-    <Card key={doc.id} className="overflow-hidden">
-      <CardContent className="p-3 space-y-2">
-
-        {isImage ? (
-          <img
-            src={publicUrl}
-            alt="document"
-            className="h-40 w-full rounded-md object-cover border border-zinc-200"
-            onError={(e) => {
-              console.log("image failed loading");
-              e.currentTarget.src =
-                "https://placehold.co/400x300?text=No+Preview";
-            }}
-          />
-        ) : (
-          <div className="flex h-40 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
-            <span className="text-3xl">PDF</span>
+            <Card className="overflow-hidden border-zinc-200 dark:border-zinc-800">
+              <div className="bg-zinc-50 px-6 py-4 border-b border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">ID Documentation</h3>
+              </div>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <DetailItem label="Aadhaar Number" value={student.aadhaar_number || "—"} />
+                  <DetailItem label="Samagra ID" value={student.samagra_id || "—"} />
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
 
-        <div className="truncate text-xs font-medium text-zinc-700 dark:text-zinc-200">
-          {doc.file_name}
-        </div>
-
-        <a
-          href={publicUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-600 underline"
-        >
-          View
-        </a>
-        <button
-onClick={async () => {
-
- const ok = window.confirm(
-   "Download this document?"
- );
-
- if(!ok) return;
-
- const res = await fetch(publicUrl);
- const blob = await res.blob();
-
- const url = window.URL.createObjectURL(blob);
- const a = document.createElement("a");
-
- a.href = url;
- a.download = doc.file_name || "document";
- a.click();
-
- window.URL.revokeObjectURL(url);
-
-}}
-className="text-xs text-green-600 underline ml-3"
->
-Download
-</button>
-        <button
-onClick={async () => {
- const ok = window.confirm(
-  "Are you sure you want to delete this image?"
- );
- if (!ok) return;
-
- try {
-
-   // DB record delete (important)
-   const { error } = await supabase
-   .from("student_documents")
-   .delete()
-   .eq("id", Number(doc.id));
-  
-  if(error){
-   alert(error.message);
-   return;
-  }
-   // storage file delete
-   if (doc.file_name?.trim()) {
-     await supabase.storage
-       .from("student-documents")
-       .remove([doc.file_name.trim()]);
-   }
-
-   // remove from screen
-   setDocuments(prev =>
-      prev.filter(d=>d.id!==doc.id)
-   );
-
- } catch(err){
-   console.error(err);
- }
-}}
-className="text-xs text-red-600 underline ml-3"
->
-Delete
-</button>
-
-      </CardContent>
-    </Card>
-  );
-})}
+          {/* Documents Sidebar */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Documents</h2>
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium dark:bg-zinc-800">
+                {documents.length}
+              </span>
+            </div>
+            
+            {documents.length === 0 ? (
+              <div className="rounded-xl border-2 border-dashed border-zinc-200 p-8 text-center dark:border-zinc-800">
+                <p className="text-sm text-zinc-500">No documents found.</p>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {documents.map((doc) => {
+                  const publicUrl = doc.file_url;
+                  return (
+                    <Card key={doc.id} className="overflow-hidden border-zinc-200 dark:border-zinc-800">
+                      <div className="group relative aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                        <img
+                          src={publicUrl}
+                          alt={doc.file_name || "Document"}
+                          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          onError={(e) => {
+                            e.currentTarget.src = "https://placehold.co/400x300?text=No+Preview";
+                          }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                          <a
+                            href={publicUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-black shadow-sm"
+                          >
+                            View Full
+                          </a>
+                        </div>
+                      </div>
+                      <CardContent className="p-3">
+                        <div className="mb-3 truncate text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                          {doc.file_name}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 flex-1 text-[10px]"
+                            onClick={async () => {
+                              const res = await fetch(publicUrl);
+                              const blob = await res.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const a = document.createElement("a");
+                              a.href = url;
+                              a.download = doc.file_name || "document";
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                            }}
+                          >
+                            Download
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 flex-1 text-[10px] text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
+                            onClick={async () => {
+                              if (!window.confirm("Delete this document?")) return;
+                              try {
+                                const { error } = await supabase.from("student_documents").delete().eq("id", Number(doc.id));
+                                if (error) throw error;
+                                if (doc.file_name?.trim()) {
+                                  await supabase.storage.from("student-documents").remove([doc.file_name.trim()]);
+                                }
+                                setDocuments(prev => prev.filter(d => d.id !== doc.id));
+                              } catch (err: any) {
+                                alert(err.message);
+                              }
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>

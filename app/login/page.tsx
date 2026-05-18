@@ -1,15 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import supabase from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,20 +18,35 @@ export default function LoginPage() {
     setError(null);
     setPending(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password,
     });
 
+    setPending(false);
+
     if (error) {
-      setError("Invalid email or password ❌");
+      console.error("Full Login Error:", error);
+      
+      if (error.message.includes("Email not confirmed")) {
+        setError("Please check your email and confirm your account before logging in. 📧");
+      } else if (error.message.includes("Invalid login credentials")) {
+        setError("Incorrect email or password. Please try again or Sign Up. ❌");
+      } else {
+        setError(error.message);
+      }
       setPending(false);
       return;
     }
 
-    // ✅ CHANGE: Ab dashboard (root) pe redirect karo
-    router.push("/");
-    router.refresh();
+    if (!data?.session) {
+      console.error("No session returned after login");
+      setError("Login failed. No session created.");
+      setPending(false);
+      return;
+    }
+
+    window.location.href = "/";
   }
 
   return (
@@ -57,9 +67,9 @@ export default function LoginPage() {
             </label>
             {error && <p className="text-sm text-red-600">{error}</p>}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col">
             <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "Loging in..." : "Login in"}
+              {pending ? "Logging in..." : "Login"}
             </Button>
             <p className="text-sm text-center mt-4">
  New School?

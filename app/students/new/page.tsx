@@ -3,11 +3,12 @@
 import * as React from "react";
 import { StudentForm, type StudentFormValues } from "@/components/students/StudentForm";
 import supabase from "@/lib/supabase";
+import { makeId } from "@/lib/students";
 
 function convertToDBDate(dob: string) {
   if (!dob) return null;
 
-  const [dd, mm, yyyy] = dob.split("-");
+  const [mm, dd, yyyy] = dob.split("-");
   return `${yyyy}-${mm}-${dd}`;
 }
 
@@ -20,10 +21,12 @@ export default function NewStudentPage() {
       // Step 1: Student info save karo
       const { data: userData } = await supabase.auth.getUser();
       
+      const newId = makeId();
 
 const { data: student, error } = await supabase
   .from("students")
   .insert({
+    id: newId,
     full_name: values.fullName,
     father_name: values.fatherName,
     mother_name: values.motherName,

@@ -6,9 +6,9 @@ import { StudentListClient } from "@/components/students/StudentListClient";
 
 export default function StudentsPage() {
   return (
-    <div className="space-y-4">
-      <div className="mx-auto max-w-6xl px-4 pt-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex h-[calc(100vh-4rem)] flex-col overflow-hidden sm:h-[calc(100vh-5rem)]">
+      <div className="mx-auto w-full max-w-6xl shrink-0 px-4 py-4 sm:py-6">
+        <div className="flex flex-col gap-3 border-b border-zinc-200 pb-4 dark:border-zinc-800 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <h1 className="text-xl font-semibold text-black dark:text-white">Manage Students</h1>
             <p className="text-sm text-zinc-600 dark:text-zinc-300">

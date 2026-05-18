@@ -130,6 +130,13 @@ export function StudentListClient() {
   async function handleSaveStudent(values: StudentFormValues) {
     if (!editing) return;
     setSavingEdit(true);
+
+    function convertToDBDate(dob: string) {
+      if (!dob) return null;
+      const [mm, dd, yyyy] = dob.split("-");
+      if (!mm || !dd || !yyyy) return null;
+      return `${yyyy}-${mm}-${dd}`;
+    }
   
     try {
       // student details update
@@ -145,7 +152,7 @@ export function StudentListClient() {
           samagra_id: values.samagraId,
           scholar_id: values.scholarId,
           father_occupation: values.fatherOccupation,
-          date_of_birth: values.dateOfBirth,
+          date_of_birth: convertToDBDate(values.dateOfBirth),
           caste: values.caste,
           previous_school: values.previousSchool,
           address: values.address,
@@ -266,9 +273,9 @@ export function StudentListClient() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
-      <Card className="flex h-[calc(100vh-12rem)] min-h-[420px] flex-col overflow-hidden">
-        <CardHeader className="space-y-2">
+    <div className="mx-auto w-full max-w-6xl flex-1 min-h-0 px-4 pb-6">
+      <Card className="flex h-full flex-col overflow-hidden">
+        <CardHeader className="shrink-0 space-y-2 py-4">
           <CardTitle>Students</CardTitle>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-zinc-600 dark:text-zinc-300">

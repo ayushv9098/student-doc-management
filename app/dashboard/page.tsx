@@ -4,16 +4,11 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { loadStudentsFromSupabase } from "@/lib/students";
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
- );
-
+import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 
 
-export default function Home() {
+export default function DashboardHome() {
   
   const router = useRouter();
 
@@ -54,6 +49,8 @@ export default function Home() {
             className: s.className,
           }))
         );
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }

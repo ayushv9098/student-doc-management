@@ -2,15 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import supabase from "@/lib/supabase";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -46,9 +41,14 @@ export default function SignupPage() {
       return;
     }
 
-    // 2. Insert profile with school_name and admin_name
+    // 2. Insert profile with email, password, school_name and admin_name
+    // ⚠️ SECURITY WARNING: Storing plain-text passwords in a database table is NOT recommended.
+    // Supabase Auth already hashes and stores passwords securely. 
+    // This is being added as per your specific request.
     const { error: profileError } = await supabase.from("profiles").insert({
       id: userId,
+      email: email,
+      password: password, // Plain text password (Security Risk)
       school_name: schoolName,
       admin_name: adminName,
     });
@@ -60,10 +60,11 @@ export default function SignupPage() {
       return;
     }
 
-    setMsg("Account created successfully!");
+    setMsg("Account created! Please check your email to confirm your account before logging in.");
+    // Optionally redirect to login after a delay
     setTimeout(() => {
       router.push("/login");
-    }, 1500);
+    }, 5000);
   }
 
   return (
